@@ -1,3 +1,11 @@
+yarn create next-app . --js --no-eslint
+yarn add moralis react-moralis web3uikit
+yarn add --dev tailwindcss postcss autoprefixer
+yarn tailwindcss init -p
+
+go here and follow instructions: https://tailwindcss.com/docs/guides/nextjs
+
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
