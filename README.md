@@ -2,8 +2,11 @@ yarn create next-app . --js --no-eslint
 yarn add moralis react-moralis web3uikit
 yarn add --dev tailwindcss postcss autoprefixer
 yarn tailwindcss init -p
+yarn add moralis-v1
 
-go here and follow instructions: https://tailwindcss.com/docs/guides/nextjs
+need to combine the above yarn commands
+
+go here and modify the 2 files: https://tailwindcss.com/docs/guides/nextjs
 yarn run dev
 
 
