@@ -2,7 +2,9 @@ yarn create next-app . --js --no-eslint
 yarn add moralis react-moralis web3uikit
 yarn add --dev tailwindcss postcss autoprefixer
 yarn tailwindcss init -p
+
 yarn add moralis-v1
+yarn add @web3auth/web3auth magic-sdk@7.0.0
 
 need to combine the above yarn commands
 
