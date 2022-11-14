@@ -1,70 +1,23 @@
 import { useWeb3Contract } from "react-moralis"
 import abi from "../constants/abi.json"
-//const hre = require("hardhat");
+import { useRef } from 'react'
 
+export default function GetLotteryToken() {
+    const inputEl = useRef(0);
 
-export default function GetLotteryToken(req, res) {
-
-    const body = req.body
-
-    console.log('body: ', body)
-
-//    console.log(`${req.body}`)
-    // Get Lottery Token button
-//    const body = req.body;
-//    console.log(`Tokens submitted: ${body.tokens}`)
-//    const blottoContract =hre.ethers.getContract("Blotto")
-//    console.log(`${blottoContract.contractAddress}`)
-
-
-const { runContractFunction: Tester } = useWeb3Contract ({
+    const { runContractFunction: Tester } = useWeb3Contract ({
         abi: abi,
         contractAddress: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         functionName: "Tester",
-        msgValue: "0",
-        params: {testint: 95},
+        params: {testint: inputEl.current.value},
     })
 
     return(
-        <div>
-            <label for="Testlabel">Test Label:</label>
-            <input type="text" id="testinput" name="testinput" />
-
-            <button className="rounded ml-auto font-bold bg-green-500" 
-            onClick={async () => {
-                await Tester()
-            }}
-            >Get Lottery Token</button>
+        <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Token Amount:</label>
+            <input ref={inputEl} type="text" id="tokenAmount" name="tokenAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+                onClick={Tester}>Get Lottery Token</button>
         </div>
     )
 }
-/*
-import { ethers } from "hardhat"
-import { useWeb3Contract } from "react-moralis"
-
-export async function GetLotteryToken(req, res) {
-//    console.log(`${req.body}`)
-    // Get Lottery Token button
-//    const body = req.body;
-
-//    console.log(`Tokens submitted: ${body.tokens}`)
-    const blottoContract = await ethers.getContract("Blotto")
-
-    const { runContractFunction: PayableTester } = useWeb3Contract ({
-        abi: blottoContract.abi,
-        contractAddress: blottoContract.address,
-        functionName: "PayableTester",
-        msgValue: "1",
-        params: {testint: 97},
-    })
-
-    return(
-        <div>
-            <button className="rounded ml-auto font-bold bg-green-500" 
-            onClick={async () => {
-                await PayableTester()
-            }}
-            >Get Lottery Token</button>
-        </div>
-    )
-}*/
