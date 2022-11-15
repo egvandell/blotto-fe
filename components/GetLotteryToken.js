@@ -7,18 +7,28 @@ const CONTRACT_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
 export default function GetLotteryToken() {
     const {isWeb3Enabled} = useMoralis()
     const inputTokenAmount = useRef(0);
+    const inputApproveToken = useRef(0);
     const inputNewCharityAddress = useRef(0);
     const[charityAddress, setCharityAddressLocal] = useState("0")
     const[lotteryId, setLotteryIdLocal] = useState("0")
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
+    const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
+
+    const { runContractFunction: approveTokens } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: CONTRACT_ADDRESS,
+        functionName: "approveTokens",
+        params: {tokenAmount: inputApproveToken.current.value},
+//        msgValue: "0",
+    })
 
     const { runContractFunction: buyTicket } = useWeb3Contract ({
         abi: abi,
         contractAddress: CONTRACT_ADDRESS,
         functionName: "buyTicket",
         params: {tokenAmount: inputTokenAmount.current.value},
-        msgValue: "0",
+//        msgValue: "0",
     })
 
     const { runContractFunction: getCharityAddress } = useWeb3Contract ({
@@ -42,6 +52,13 @@ export default function GetLotteryToken() {
         params: {},
     })
 
+    const { runContractFunction: getTokenAllowance } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: CONTRACT_ADDRESS,
+        functionName: "getTokenAllowance",
+        params: {},
+    })
+    
     const { runContractFunction: getTokenBalanceSender } = useWeb3Contract ({
         abi: abi,
         contractAddress: CONTRACT_ADDRESS,
@@ -79,11 +96,14 @@ export default function GetLotteryToken() {
             const lotteryIdFromCall = await getLotteryId()
             setLotteryIdLocal(lotteryIdFromCall)
 
+            const tokenAllowanceCall = await getTokenAllowance()
+            setTokenAllowanceLocal(tokenAllowanceCall.toString())
+
             const tokenBalanceSenderFromCall = await getTokenBalanceSender()
-            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())
+            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
-            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())
+            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -92,13 +112,21 @@ export default function GetLotteryToken() {
 
     return(
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Token Amount:</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Approve Token Amount:</label>
+            <input ref={inputApproveToken} type="text" id="approveToken" name="approveToken" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+                onClick={approveTokens}>Approve Lottery Token</button>
+            <br />
+
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Buy Token Amount:</label>
             <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
                 onClick={buyTicket}>Get Lottery Token</button>
             <br />
             <br />
             <div>Lottery Id: {lotteryId}</div>
+            <br />
+            <div>Current Allowance: {tokenAllowance}</div>
             <br />
             <div>Token Balance Sender: {tokenBalanceSender}</div>
             <br />

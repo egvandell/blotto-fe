@@ -52,6 +52,11 @@
   },
   {
     "inputs": [],
+    "name": "Lottery_NoTokensSentForApproval",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "Lottery_NotEnoughTokensSent",
     "type": "error"
   },
@@ -187,6 +192,19 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "approveTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "blotToken",
     "outputs": [
@@ -209,7 +227,7 @@
     ],
     "name": "buyTicket",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -233,6 +251,19 @@
         "internalType": "uint16",
         "name": "",
         "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getTokenAllowance",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
