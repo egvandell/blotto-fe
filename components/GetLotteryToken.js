@@ -9,6 +9,9 @@ export default function GetLotteryToken() {
     const inputTokenAmount = useRef(0);
     const inputNewCharityAddress = useRef(0);
     const[charityAddress, setCharityAddressLocal] = useState("0")
+    const[lotteryId, setLotteryIdLocal] = useState("0")
+    const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
+    const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
 
     const { runContractFunction: buyTicket } = useWeb3Contract ({
         abi: abi,
@@ -32,6 +35,27 @@ export default function GetLotteryToken() {
         params: {_address: inputNewCharityAddress.current.value},
     })
 
+    const { runContractFunction: getLotteryId } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: CONTRACT_ADDRESS,
+        functionName: "getLotteryId",
+        params: {},
+    })
+
+    const { runContractFunction: getTokenBalanceSender } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: CONTRACT_ADDRESS,
+        functionName: "getTokenBalanceSender",
+        params: {},
+    })
+
+    const { runContractFunction: getTokenBalanceContract } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: CONTRACT_ADDRESS,
+        functionName: "getTokenBalanceContract",
+        params: {},
+    })
+
     const { runContractFunction: Tester } = useWeb3Contract ({
         abi: abi,
         contractAddress: CONTRACT_ADDRESS,
@@ -39,10 +63,27 @@ export default function GetLotteryToken() {
         params: {testint: "100"},
     })
 
+    const { runContractFunction: PayableTester } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: CONTRACT_ADDRESS,
+        functionName: "PayableTester",
+        params: {testint: "100"},
+        msgValue: "100",
+    })
+
     useEffect(() => {
         async function updateUI() {
             const charityAddressFromCall = await getCharityAddress()
             setCharityAddressLocal(charityAddressFromCall)
+
+            const lotteryIdFromCall = await getLotteryId()
+            setLotteryIdLocal(lotteryIdFromCall)
+
+            const tokenBalanceSenderFromCall = await getTokenBalanceSender()
+            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())
+
+            const tokenBalanceContractFromCall = await getTokenBalanceContract()
+            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -51,14 +92,24 @@ export default function GetLotteryToken() {
 
     return(
         <div class="mb-4">
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={Tester}>Run Tester</button>
-
             <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Token Amount:</label>
             <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
                 onClick={buyTicket}>Get Lottery Token</button>
-
+            <br />
+            <br />
+            <div>Lottery Id: {lotteryId}</div>
+            <br />
+            <div>Token Balance Sender: {tokenBalanceSender}</div>
+            <br />
+            <div>Token Balance Contract: {tokenBalanceContract}</div>
+            <br />
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+                onClick={Tester}>Run Tester</button>
+            <br />
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
+                onClick={PayableTester}>Run Payable Tester</button>
+            <br />
             <div>Last Charity Address: {charityAddress}</div>
 
             <input ref={inputNewCharityAddress} type="text" id="newCharityAddress" name="newCharityAddress" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
