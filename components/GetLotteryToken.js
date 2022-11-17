@@ -24,7 +24,7 @@ export default function GetLotteryToken() {
 
     const { runContractFunction: approveTokens } = useWeb3Contract ({
         abi: abi,
-        contractAddress: contractAddresses,
+        contractAddress: lotteryAddress,
         functionName: "approveTokens",
         params: {tokenAmount: inputApproveToken.current.value},
 //        msgValue: "0",
@@ -104,14 +104,17 @@ export default function GetLotteryToken() {
             setLotteryIdLocal(lotteryIdFromCall)
 
             const tokenAllowanceCall = await getTokenAllowance()
-            setTokenAllowanceLocal(tokenAllowanceCall.toString())
+//            setTokenAllowanceLocal(tokenAllowanceCall.toString())
+            setTokenAllowanceLocal(tokenAllowanceCall);
 
             
             const tokenBalanceSenderFromCall = await getTokenBalanceSender()
-            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
+//            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
+            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall)       // uint256 needed toString()
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
-            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
+            setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
+//            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
 
         }
         if (isWeb3Enabled) {
@@ -135,8 +138,8 @@ export default function GetLotteryToken() {
             <br />
             <div>Lottery Address: {lotteryAddress}</div>
             <div>Lottery Id: {lotteryId}</div>
-            <div>Current Allowance: {tokenAllowance}</div>
             <div>Token Balance Sender: {tokenBalanceSender}</div>
+            <div>Current Allowance: {tokenAllowance}</div>
             <div>Token Balance Contract: {tokenBalanceContract}</div>
             <br />
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
