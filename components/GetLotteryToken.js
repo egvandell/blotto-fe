@@ -18,6 +18,7 @@ export default function GetLotteryToken() {
 
     const[charityAddress, setCharityAddressLocal] = useState("0")
     const[lotteryId, setLotteryIdLocal] = useState("0")
+    const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
@@ -32,7 +33,7 @@ export default function GetLotteryToken() {
 
     const { runContractFunction: buyTicket } = useWeb3Contract ({
         abi: abi,
-        contractAddress: contractAddresses,
+        contractAddress: lotteryAddress,
         functionName: "buyTicket",
         params: {tokenAmount: inputTokenAmount.current.value},
 //        msgValue: "0",
@@ -59,6 +60,13 @@ export default function GetLotteryToken() {
         params: {},
     })
 
+    const { runContractFunction: getBlotTokenAddress } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "getBlotTokenAddress",
+        params: {},
+    })
+
     const { runContractFunction: getTokenAllowance } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
@@ -82,7 +90,7 @@ export default function GetLotteryToken() {
 
     const { runContractFunction: Tester } = useWeb3Contract ({
         abi: abi,
-        contractAddress: contractAddresses,
+        contractAddress: lotteryAddress,
         functionName: "Tester",
         params: {testint: "100"},
     })
@@ -103,18 +111,21 @@ export default function GetLotteryToken() {
             const lotteryIdFromCall = await getLotteryId()
             setLotteryIdLocal(lotteryIdFromCall)
 
+            const blotTokenAddressFromCall = await getBlotTokenAddress()
+            setBlotTokenAddressLocal(blotTokenAddressFromCall)
+            
             const tokenAllowanceCall = await getTokenAllowance()
-//            setTokenAllowanceLocal(tokenAllowanceCall.toString())
-            setTokenAllowanceLocal(tokenAllowanceCall);
+            setTokenAllowanceLocal(tokenAllowanceCall.toString())
+//            setTokenAllowanceLocal(tokenAllowanceCall);
 
             
             const tokenBalanceSenderFromCall = await getTokenBalanceSender()
-//            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
-            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall)       // uint256 needed toString()
+            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
+//            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall)       // uint256 needed toString()
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
-            setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
-//            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
+//            setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
+            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
 
         }
         if (isWeb3Enabled) {
@@ -137,6 +148,7 @@ export default function GetLotteryToken() {
             <br />
             <br />
             <div>Lottery Address: {lotteryAddress}</div>
+            <div>Blot Token Address: {blotTokenAddress}</div>
             <div>Lottery Id: {lotteryId}</div>
             <div>Token Balance Sender: {tokenBalanceSender}</div>
             <div>Current Allowance: {tokenAllowance}</div>
