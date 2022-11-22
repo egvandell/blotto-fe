@@ -114,6 +114,15 @@ export default function GetLotteryToken() {
             const blotTokenAddressFromCall = await getBlotTokenAddress()
             setBlotTokenAddressLocal(blotTokenAddressFromCall)
             
+
+/* ABI erros - when seeing this error:
+1) "Error: Objects are not valid as a React child (found: object with keys {_hex, _isBigNumber}). If you meant to render a collection of children, use an array instead.
+- toString causes compile failure if no data is returned
+
+2) "TypeError: Cannot read properties of undefined (reading 'toString')" 
+- means the ABI is not matching the calls in this file (double check ABI is current)
+*/
+
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
 //            setTokenAllowanceLocal(tokenAllowanceCall);
@@ -124,7 +133,7 @@ export default function GetLotteryToken() {
 //            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall)       // uint256 needed toString()
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
-//            setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
+//          setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
             setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
 
         }

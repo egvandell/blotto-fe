@@ -14,14 +14,11 @@ export default function GetLotteryToken2() {
 
     const inputTokenAmount = useRef(0);
     const inputApproveToken = useRef(0);
-    const inputNewCharityAddress = useRef(0);
 
-    const[charityAddress, setCharityAddressLocal] = useState("0")
     const[lotteryId, setLotteryIdLocal] = useState("0")
     const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
-    const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
-    const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
+
 
     const { runContractFunction: approveTokens } = useWeb3Contract ({
         abi: abi,
@@ -37,20 +34,6 @@ export default function GetLotteryToken2() {
         functionName: "buyTicket",
         params: {tokenAmount: inputTokenAmount.current.value},
 //        msgValue: "0",
-    })
-
-    const { runContractFunction: getCharityAddress } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: contractAddresses,
-        functionName: "getCharityAddress",
-        params: {},
-    })
-
-    const { runContractFunction: setCharityAddress } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: contractAddresses,
-        functionName: "setCharityAddress",
-        params: {_address: inputNewCharityAddress.current.value},
     })
 
     const { runContractFunction: getLotteryId } = useWeb3Contract ({
@@ -74,59 +57,16 @@ export default function GetLotteryToken2() {
         params: {},
     })
     
-    const { runContractFunction: getTokenBalanceSender } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "getTokenBalanceSender",
-        params: {},
-    })
-
-    const { runContractFunction: getTokenBalanceContract } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "getTokenBalanceContract",
-        params: {},
-    })
-
-    const { runContractFunction: Tester } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "Tester",
-        params: {testint: "100"},
-    })
-
-    const { runContractFunction: PayableTester } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: contractAddresses,
-        functionName: "PayableTester",
-        params: {testint: "100"},
-        msgValue: "100",
-    })
-
     useEffect(() => {
         async function updateUI() {
-            const charityAddressFromCall = await getCharityAddress()
-            setCharityAddressLocal(charityAddressFromCall)
-
             const lotteryIdFromCall = await getLotteryId()
             setLotteryIdLocal(lotteryIdFromCall)
 
             const blotTokenAddressFromCall = await getBlotTokenAddress()
             setBlotTokenAddressLocal(blotTokenAddressFromCall)
-            
+
             const tokenAllowanceCall = await getTokenAllowance()
-//            setTokenAllowanceLocal(tokenAllowanceCall.toString())
-            setTokenAllowanceLocal(tokenAllowanceCall);
-
-            
-            const tokenBalanceSenderFromCall = await getTokenBalanceSender()
-//            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
-            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall)       // uint256 needed toString()
-
-            const tokenBalanceContractFromCall = await getTokenBalanceContract()
-            setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
-//            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
-
+            setTokenAllowanceLocal(tokenAllowanceCall.toString())
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -150,21 +90,8 @@ export default function GetLotteryToken2() {
             <div>Lottery Address: {lotteryAddress}</div>
             <div>Blot Token Address: {blotTokenAddress}</div>
             <div>Lottery Id: {lotteryId}</div>
-            <div>Token Balance Sender: {tokenBalanceSender}</div>
-            <div>Current Allowance: {tokenAllowance}</div>
-            <div>Token Balance Contract: {tokenBalanceContract}</div>
+            <div>Contract Token Allowance: {tokenAllowance}</div>
             <br />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={Tester}>Run Tester</button>
-            <br />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={PayableTester}>Run Payable Tester</button>
-            <br />
-            <div>Last Charity Address: {charityAddress}</div>
-
-            <input ref={inputNewCharityAddress} type="text" id="newCharityAddress" name="newCharityAddress" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={setCharityAddress}>Set New Charity Address</button>
         </div>
     )
 }

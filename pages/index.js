@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import Header from "../components/Header"
-import GetLotteryToken from "../components/GetLotteryToken"
+import GetLotteryToken2 from "../components/GetLotteryToken2"
 import { useMoralis } from 'react-moralis'
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
     <div className={styles.container}>
       <Header />
       {isWeb3Enabled ? (
-        <GetLotteryToken />
+        <GetLotteryToken2 />
       ) : (
         <div>Metamask was not detected</div>
       )}
