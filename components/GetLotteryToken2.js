@@ -119,28 +119,43 @@ export default function GetLotteryToken2() {
 
     return(
         <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">Approve Token Amount:</label>
-            <input ref={inputApproveToken} type="text" id="approveToken" name="approveToken" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={approve}>Approve Lottery Token</button>
-            <br />
-
-            <label className="block text-gray-700 text-sm font-bold mb-2">Buy Token Amount:</label>
-            <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={buyTicket}>Get Lottery Token</button>
-            <br />
-            <br />
-            <div>Lottery Address: {lotteryAddress}</div>
-            <div>Blot Token Address: {blotTokenAddress}</div>
-            <div>Lottery Id: {lotteryId}</div>
-            <div>Token Balance Sender: {tokenBalanceSender}</div>
-            <div>Contract Token Allowance: {tokenAllowance}</div>
-            <div>Token Balance Contract: {tokenBalanceContract}</div>
             <div>
+            <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG VARIABLES:</label>
+                Lottery Address: {lotteryAddress}<br />
+                Blot Token Address: {blotTokenAddress}<br />
+                Lottery Id: {lotteryId}<br />
+                Token Balance Contract: {tokenBalanceContract}<br />
                 Block Number: {blockNumber}
             </div>
+            <nav className="p-3 border-b-2 flex flex-row" />
+
+            <div>
+                <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
+                <div>My $BLOT Token Balance: {tokenBalanceSender}</div>
+                <div>Blotto $BLOT Token Allowance: {tokenAllowance}</div>
+                <div>Current Lottery - Number of Tokens: null</div>
+                <div>Current Lottery - Next Drawing: null</div>
+            </div>
+
+            <nav className="p-3 border-b-2 flex flex-row" />
+
+            <label className="block text-gray-700 text-lg font-bold mb-2">ACTIONS:</label>
+            <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
             <br />
+            <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
+            <input ref={inputApproveToken} type="text" id="approveToken" name="approveToken" 
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            &nbsp;
+            <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                onClick={approve}>Approve Tokens</button></label>
+
+            <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
+            <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" 
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            &nbsp;
+            <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                onClick={buyTicket}>Buy Lottery Ticket</button></label>
+                
         </div>
     )
 }
