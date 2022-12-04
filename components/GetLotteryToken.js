@@ -1,4 +1,4 @@
-import { contractAddresses, abi } from "../constants"
+import { contractAddresses, abi, abitoken } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
 import { useRef, useEffect, useState } from 'react'
 import { useNotification } from "web3uikit"
@@ -9,25 +9,34 @@ export default function GetLotteryToken() {
     const { Moralis, isWeb3Enabled, chainId: chainIdHex } = useMoralis()
     // These get re-rendered every time due to our connect button!
     const chainId = parseInt(chainIdHex)
-    // console.log(`ChainId is ${chainId}`)
+    //console.log(`ChainId is ${chainId}`)
     const lotteryAddress = chainId in contractAddresses ? contractAddresses[chainId][0] : null
+    const tokenAddress = chainId in contractAddresses ? contractAddresses[chainId][1] : null
+//    console.log(`lotteryAddress is ${lotteryAddress}`)
+//    console.log(`tokenAddress is ${tokenAddress}`)
+
+//    const user = await Moralis.User.current();
 
     const inputTokenAmount = useRef(0);
     const inputApproveToken = useRef(0);
-    const inputNewCharityAddress = useRef(0);
 
-    const[charityAddress, setCharityAddressLocal] = useState("0")
+
     const[lotteryId, setLotteryIdLocal] = useState("0")
     const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
+    const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
+    const[blockNumber, setBlockLocal] = useState("0")
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
-    const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
 
-    const { runContractFunction: approveTokens } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "approveTokens",
-        params: {tokenAmount: inputApproveToken.current.value},
+
+    const { runContractFunction: approve } = useWeb3Contract ({
+        abi: abitoken,
+        contractAddress: tokenAddress,
+        functionName: "approve",
+        params: {
+            spender: lotteryAddress,
+            amount: inputApproveToken.current.value
+        },
 //        msgValue: "0",
     })
 
@@ -37,20 +46,6 @@ export default function GetLotteryToken() {
         functionName: "buyTicket",
         params: {tokenAmount: inputTokenAmount.current.value},
 //        msgValue: "0",
-    })
-
-    const { runContractFunction: getCharityAddress } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: contractAddresses,
-        functionName: "getCharityAddress",
-        params: {},
-    })
-
-    const { runContractFunction: setCharityAddress } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: contractAddresses,
-        functionName: "setCharityAddress",
-        params: {_address: inputNewCharityAddress.current.value},
     })
 
     const { runContractFunction: getLotteryId } = useWeb3Contract ({
@@ -74,6 +69,13 @@ export default function GetLotteryToken() {
         params: {},
     })
     
+    const { runContractFunction: getBlockNumber1 } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "getBlockNumber1",
+        params: {},
+    })
+
     const { runContractFunction: getTokenBalanceSender } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
@@ -88,54 +90,27 @@ export default function GetLotteryToken() {
         params: {},
     })
 
-    const { runContractFunction: Tester } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "Tester",
-        params: {testint: "100"},
-    })
 
-    const { runContractFunction: PayableTester } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: contractAddresses,
-        functionName: "PayableTester",
-        params: {testint: "100"},
-        msgValue: "100",
-    })
-
+    
     useEffect(() => {
         async function updateUI() {
-            const charityAddressFromCall = await getCharityAddress()
-            setCharityAddressLocal(charityAddressFromCall)
+            const getBlockCall = await getBlockNumber1()
+            setBlockLocal(getBlockCall.toString())
 
             const lotteryIdFromCall = await getLotteryId()
             setLotteryIdLocal(lotteryIdFromCall)
 
             const blotTokenAddressFromCall = await getBlotTokenAddress()
             setBlotTokenAddressLocal(blotTokenAddressFromCall)
-            
-
-/* ABI erros - when seeing this error:
-1) "Error: Objects are not valid as a React child (found: object with keys {_hex, _isBigNumber}). If you meant to render a collection of children, use an array instead.
-- toString causes compile failure if no data is returned
-
-2) "TypeError: Cannot read properties of undefined (reading 'toString')" 
-- means the ABI is not matching the calls in this file (double check ABI is current)
-*/
 
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
-//            setTokenAllowanceLocal(tokenAllowanceCall);
 
-            
             const tokenBalanceSenderFromCall = await getTokenBalanceSender()
             setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
-//            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall)       // uint256 needed toString()
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
-//          setTokenBalanceContractLocal(tokenBalanceContractFromCall)   // uint256 needed toString()
             setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
-
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -143,37 +118,44 @@ export default function GetLotteryToken() {
     }, [isWeb3Enabled])
 
     return(
-        <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Approve Token Amount:</label>
-            <input ref={inputApproveToken} type="text" id="approveToken" name="approveToken" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={approveTokens}>Approve Lottery Token</button>
-            <br />
+        <div>
+            <div>
+            <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG VARIABLES:</label>
+                Lottery Address: {lotteryAddress}<br />
+                Blot Token Address: {blotTokenAddress}<br />
+                Lottery Id: {lotteryId}<br />
+                Token Balance Contract: {tokenBalanceContract}<br />
+                Block Number: {blockNumber}
+            </div>
+            <nav className="p-3 border-b-2 flex flex-row" />
 
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="Testlabel">Buy Token Amount:</label>
-            <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={buyTicket}>Get Lottery Token</button>
-            <br />
-            <br />
-            <div>Lottery Address: {lotteryAddress}</div>
-            <div>Blot Token Address: {blotTokenAddress}</div>
-            <div>Lottery Id: {lotteryId}</div>
-            <div>Token Balance Sender: {tokenBalanceSender}</div>
-            <div>Current Allowance: {tokenAllowance}</div>
-            <div>Token Balance Contract: {tokenBalanceContract}</div>
-            <br />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={Tester}>Run Tester</button>
-            <br />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={PayableTester}>Run Payable Tester</button>
-            <br />
-            <div>Last Charity Address: {charityAddress}</div>
+            <div>
+                <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
+                <div>My $BLOT Token Balance: {tokenBalanceSender}</div>
+                <div>Blotto $BLOT Token Allowance: {tokenAllowance}</div>
+                <div>Current Lottery - Number of Tokens: null</div>
+                <div>Current Lottery - Next Drawing: null</div>
+            </div>
 
-            <input ref={inputNewCharityAddress} type="text" id="newCharityAddress" name="newCharityAddress" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
-            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" 
-                onClick={setCharityAddress}>Set New Charity Address</button>
+            <nav className="p-3 border-b-2 flex flex-row" />
+
+            <label className="block text-gray-700 text-lg font-bold mb-2">ACTIONS:</label>
+            <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
+            <br />
+            <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
+            <input ref={inputApproveToken} type="text" id="approveToken" name="approveToken" 
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            &nbsp;
+            <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                onClick={approve}>Approve Tokens</button></label>
+
+            <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
+            <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" 
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            &nbsp;
+            <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                onClick={buyTicket}>Buy Lottery Ticket</button></label>
+                
         </div>
     )
 }
