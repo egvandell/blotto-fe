@@ -69,10 +69,10 @@ export default function GetLotteryToken() {
         params: {},
     })
     
-    const { runContractFunction: getBlockNumber1 } = useWeb3Contract ({
+    const { runContractFunction: getTheBlockNumber } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
-        functionName: "getBlockNumber1",
+        functionName: "getTheBlockNumber",
         params: {},
     })
 
@@ -94,14 +94,16 @@ export default function GetLotteryToken() {
     
     useEffect(() => {
         async function updateUI() {
-            const getBlockCall = await getBlockNumber1()
-            setBlockLocal(getBlockCall.toString())
-
             const lotteryIdFromCall = await getLotteryId()
             setLotteryIdLocal(lotteryIdFromCall)
 
             const blotTokenAddressFromCall = await getBlotTokenAddress()
             setBlotTokenAddressLocal(blotTokenAddressFromCall)
+
+            // ERROR: "Cannot read properties of undefined (reading 'toString')" 
+            // Check ABI, MM Cache, contractAddresses
+            const getBlockCall = await getTheBlockNumber()
+            setBlockLocal(getBlockCall.toString())
 
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
@@ -119,25 +121,70 @@ export default function GetLotteryToken() {
 
     return(
         <div>
-            <div>
-            <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG VARIABLES:</label>
-                Lottery Address: {lotteryAddress}<br />
-                Blot Token Address: {blotTokenAddress}<br />
-                Lottery Id: {lotteryId}<br />
-                Token Balance Contract: {tokenBalanceContract}<br />
-                Block Number: {blockNumber}
-            </div>
-            <nav className="p-3 border-b-2 flex flex-row" />
-
-            <div>
+              {/*toggle visible/collapse*/}
+            <table 
+                class="visible" cellpadding="5">
+            <tr>
+                <th align="left" colspan="2">
+                    <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG VARIABLES:</label>
+                </th>
+            </tr>
+            <tr>
+                <td>Lottery Address:</td>
+                <td align="right">{lotteryAddress}</td>
+            </tr>
+            <tr>
+                <td>Blot Token Address:</td>
+                <td align="right">{blotTokenAddress}</td>
+            </tr>
+            <tr>
+                <td>Lottery Id:</td>
+                <td align="right">{lotteryId}</td>
+            </tr>
+            <tr>
+                <td>Token Balance Contract:</td>
+                <td align="right">{tokenBalanceContract}</td>
+            </tr>
+            <tr>
+                <td>Block Number:</td>
+                <td align="right">{blockNumber}</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <nav className="p-3 border-b-2 flex flex-row" />
+                </td>
+            </tr>
+            </table>
+            
+            <table 
+                class="visible" cellpadding="5">
+            <tr>
+                <th align="left" colspan="2">
                 <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
-                <div>My $BLOT Token Balance: {tokenBalanceSender}</div>
-                <div>Blotto $BLOT Token Allowance: {tokenAllowance}</div>
-                <div>Current Lottery - Number of Tokens: null</div>
-                <div>Current Lottery - Next Drawing: null</div>
-            </div>
-
-            <nav className="p-3 border-b-2 flex flex-row" />
+                </th>
+            </tr>
+            <tr>
+                <td>My $BLOT Token Balance:</td>
+                <td align="right">{tokenBalanceSender}</td>
+            </tr>
+            <tr>
+                <td>Blotto $BLOT Token Allowance:</td>
+                <td align="right">{tokenAllowance}</td>
+            </tr>
+            <tr>
+                <td>Current Lottery - Number of Tokens:</td>
+                <td align="right">null</td>
+            </tr>
+            <tr>
+                <td>Current Lottery - Next Drawing:</td>
+                <td align="right">null</td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <nav className="p-3 border-b-2 flex flex-row" />
+                </td>
+            </tr>
+            </table>
 
             <label className="block text-gray-700 text-lg font-bold mb-2">ACTIONS:</label>
             <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
