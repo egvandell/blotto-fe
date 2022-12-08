@@ -24,7 +24,6 @@ export default function GetLotteryToken() {
     const[lotteryId, setLotteryIdLocal] = useState("0")
     const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
     const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
-    const[blockNumber, setBlockLocal] = useState("0")
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
 
@@ -40,10 +39,10 @@ export default function GetLotteryToken() {
 //        msgValue: "0",
     })
 
-    const { runContractFunction: buyTicket } = useWeb3Contract ({
+    const { runContractFunction: getTicket } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
-        functionName: "buyTicket",
+        functionName: "getTicket",
         params: {tokenAmount: inputTokenAmount.current.value},
 //        msgValue: "0",
     })
@@ -69,13 +68,6 @@ export default function GetLotteryToken() {
         params: {},
     })
     
-    const { runContractFunction: getTheBlockNumber } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "getTheBlockNumber",
-        params: {},
-    })
-
     const { runContractFunction: getTokenBalanceSender } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
@@ -102,9 +94,6 @@ export default function GetLotteryToken() {
 
             // ERROR: "Cannot read properties of undefined (reading 'toString')" 
             // Check ABI, MM Cache, contractAddresses
-            const getBlockCall = await getTheBlockNumber()
-            setBlockLocal(getBlockCall.toString())
-
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
 
@@ -130,24 +119,20 @@ export default function GetLotteryToken() {
                 </th>
             </tr>
             <tr>
-                <td>Lottery Address:</td>
+                <td>Blotto (Contract) Address:</td>
                 <td align="right">{lotteryAddress}</td>
             </tr>
             <tr>
-                <td>Blot Token Address:</td>
+                <td>Blotto Token Balance:</td>
+                <td align="right">{tokenBalanceContract}</td>
+            </tr>
+            <tr>
+                <td>$BLOT Address:</td>
                 <td align="right">{blotTokenAddress}</td>
             </tr>
             <tr>
                 <td>Lottery Id:</td>
                 <td align="right">{lotteryId}</td>
-            </tr>
-            <tr>
-                <td>Token Balance Contract:</td>
-                <td align="right">{tokenBalanceContract}</td>
-            </tr>
-            <tr>
-                <td>Block Number:</td>
-                <td align="right">{blockNumber}</td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -164,20 +149,20 @@ export default function GetLotteryToken() {
                 </th>
             </tr>
             <tr>
-                <td>My $BLOT Token Balance:</td>
+                <td>$BLOT Balance:</td>
                 <td align="right">{tokenBalanceSender}</td>
             </tr>
             <tr>
-                <td>Blotto $BLOT Token Allowance:</td>
+                <td>Current Blotto Allowance:</td>
                 <td align="right">{tokenAllowance}</td>
             </tr>
             <tr>
-                <td>Current Lottery - Number of Tokens:</td>
-                <td align="right">null</td>
+                <td>Current Lottery ({lotteryId})- Number of Tokens:</td>
+                <td align="right">[need # of tokens]</td>
             </tr>
             <tr>
                 <td>Current Lottery - Next Drawing:</td>
-                <td align="right">null</td>
+                <td align="right">[need oracle info]]</td>
             </tr>
             <tr>
                 <td colspan="2">
@@ -201,7 +186,7 @@ export default function GetLotteryToken() {
                 className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             &nbsp;
             <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                onClick={buyTicket}>Buy Lottery Ticket</button></label>
+                onClick={getTicket}>Buy Lottery Ticket</button></label>
                 
         </div>
     )
