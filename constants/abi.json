@@ -36,16 +36,6 @@
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "Lottery_NoTicketsAcquired",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "Lottery_UpkeepNotNeeded",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",
