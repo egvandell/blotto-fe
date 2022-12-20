@@ -26,6 +26,7 @@ export default function GetLotteryToken() {
     const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
+    const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
 
 
     const { runContractFunction: approve } = useWeb3Contract ({
@@ -82,6 +83,13 @@ export default function GetLotteryToken() {
         params: {},
     })
 
+    const { runContractFunction: checkUpkeep } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "checkUpkeep",
+        params: {},
+    })
+
 
     
     useEffect(() => {
@@ -102,6 +110,9 @@ export default function GetLotteryToken() {
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
             setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
+
+            const checkUpkeepResponsetFromCall = await checkUpkeep()
+            setCheckUpkeepResponseLocal(checkUpkeepResponsetFromCall.toString())
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -115,9 +126,15 @@ export default function GetLotteryToken() {
                 class="visible" cellpadding="5">
             <tr>
                 <th align="left" colspan="2">
-                    <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG VARIABLES:</label>
+                    <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG:</label>
                 </th>
             </tr>
+            <tr>
+                <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                onClick={checkUpkeep}>Check Upkeep</button></td>
+                <td align="right">{checkUpkeepResponse}</td>
+            </tr>
+
             <tr>
                 <td>Blotto (Contract) Address:</td>
                 <td align="right">{lotteryAddress}</td>
