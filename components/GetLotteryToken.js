@@ -28,6 +28,12 @@ export default function GetLotteryToken() {
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
 
+    const { runContractFunction: checkUpkeep } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "checkUpkeep",
+        params: {performData: "0x00" },
+    })
 
     const { runContractFunction: approve } = useWeb3Contract ({
         abi: abitoken,
@@ -83,16 +89,6 @@ export default function GetLotteryToken() {
         params: {},
     })
 
-    const { runContractFunction: checkUpkeep } = useWeb3Contract ({
-        abi: abi,
-        contractAddress: lotteryAddress,
-        functionName: "checkUpkeep",
-//        params: {performData: ""},
-        params: {},
-    })
-
-
-    
     useEffect(() => {
         async function updateUI() {
             const lotteryIdFromCall = await getLotteryId()
@@ -103,6 +99,9 @@ export default function GetLotteryToken() {
 
             // ERROR: "Cannot read properties of undefined (reading 'toString')" 
             // Check ABI, MM Cache, contractAddresses
+            const checkUpkeepResponseFromCall = await checkUpkeep()
+            setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall)
+
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
 
@@ -111,9 +110,6 @@ export default function GetLotteryToken() {
 
             const tokenBalanceContractFromCall = await getTokenBalanceContract()
             setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
-
-            const checkUpkeepResponsetFromCall = await checkUpkeep()
-            setCheckUpkeepResponseLocal(checkUpkeepResponsetFromCall)
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -133,7 +129,21 @@ export default function GetLotteryToken() {
                     </tr>
                     <tr>
                         <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                        onClick={checkUpkeep}>Check Upkeep</button></td>
+                        onClick=
+                        {
+                            async () =>
+                                await checkUpkeep({
+                                    onSuccess: (mess) => {
+//                                        handleSuccess()
+                                        console.log(mess)
+                                    },
+                                    onError: (err) => {
+                                        console.log(err)
+                                    }
+                                })
+                                                        
+                            }
+                            >Check Upkeep</button></td>
                         <td align="right">{checkUpkeepResponse}</td>
                     </tr>
 

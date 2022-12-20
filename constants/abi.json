@@ -267,13 +267,24 @@
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "performData",
+        "type": "bytes"
+      }
+    ],
     "name": "checkUpkeep",
     "outputs": [
       {
         "internalType": "bool",
         "name": "upkeepNeeded",
         "type": "bool"
+      },
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
     ],
     "stateMutability": "view",
