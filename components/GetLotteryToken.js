@@ -87,6 +87,7 @@ export default function GetLotteryToken() {
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "checkUpkeep",
+//        params: {performData: ""},
         params: {},
     })
 
@@ -112,7 +113,7 @@ export default function GetLotteryToken() {
             setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
 
             const checkUpkeepResponsetFromCall = await checkUpkeep()
-            setCheckUpkeepResponseLocal(checkUpkeepResponsetFromCall.toString())
+            setCheckUpkeepResponseLocal(checkUpkeepResponsetFromCall)
         }
         if (isWeb3Enabled) {
             updateUI()
@@ -123,69 +124,73 @@ export default function GetLotteryToken() {
         <div>
               {/*toggle visible/collapse*/}
             <table 
-                class="visible" cellpadding="5">
-            <tr>
-                <th align="left" colspan="2">
-                    <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG:</label>
-                </th>
-            </tr>
-            <tr>
-                <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                onClick={checkUpkeep}>Check Upkeep</button></td>
-                <td align="right">{checkUpkeepResponse}</td>
-            </tr>
+                className="visible" cellPadding="5">
+                <tbody>
+                    <tr>
+                        <th align="left" colSpan="2">
+                            <label className="block text-gray-700 text-lg font-bold mb-2">DEBUG:</label>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick={checkUpkeep}>Check Upkeep</button></td>
+                        <td align="right">{checkUpkeepResponse}</td>
+                    </tr>
 
-            <tr>
-                <td>Blotto (Contract) Address:</td>
-                <td align="right">{lotteryAddress}</td>
-            </tr>
-            <tr>
-                <td>Blotto Token Balance:</td>
-                <td align="right">{tokenBalanceContract}</td>
-            </tr>
-            <tr>
-                <td>$BLOT Address:</td>
-                <td align="right">{blotTokenAddress}</td>
-            </tr>
-            <tr>
-                <td>Lottery Id:</td>
-                <td align="right">{lotteryId}</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <nav className="p-3 border-b-2 flex flex-row" />
-                </td>
-            </tr>
+                    <tr>
+                        <td>Blotto (Contract) Address:</td>
+                        <td align="right">{lotteryAddress}</td>
+                    </tr>
+                    <tr>
+                        <td>Blotto Token Balance:</td>
+                        <td align="right">{tokenBalanceContract}</td>
+                    </tr>
+                    <tr>
+                        <td>$BLOT Address:</td>
+                        <td align="right">{blotTokenAddress}</td>
+                    </tr>
+                    <tr>
+                        <td>Lottery Id:</td>
+                        <td align="right">{lotteryId}</td>
+                    </tr>
+                    <tr>
+                        <td colSpan="2">
+                            <nav className="p-3 border-b-2 flex flex-row" />
+                        </td>
+                    </tr>
+                </tbody>
             </table>
             
             <table 
-                class="visible" cellpadding="5">
-            <tr>
-                <th align="left" colspan="2">
-                <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
-                </th>
-            </tr>
-            <tr>
-                <td>$BLOT Balance:</td>
-                <td align="right">{tokenBalanceSender}</td>
-            </tr>
-            <tr>
-                <td>Current Blotto Allowance:</td>
-                <td align="right">{tokenAllowance}</td>
-            </tr>
-            <tr>
-                <td>Current Lottery ({lotteryId})- Number of Tokens:</td>
-                <td align="right">[need # of tokens]</td>
-            </tr>
-            <tr>
-                <td>Current Lottery - Next Drawing:</td>
-                <td align="right">[need oracle info]]</td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <nav className="p-3 border-b-2 flex flex-row" />
-                </td>
-            </tr>
+                className="visible" cellPadding="5">
+                <tbody>
+                    <tr>
+                        <th align="left" colSpan="2">
+                        <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>$BLOT Balance:</td>
+                        <td align="right">{tokenBalanceSender}</td>
+                    </tr>
+                    <tr>
+                        <td>Current Blotto Allowance:</td>
+                        <td align="right">{tokenAllowance}</td>
+                    </tr>
+                    <tr>
+                        <td>Current Lottery ({lotteryId})- Number of Tokens:</td>
+                        <td align="right">[need # of tokens]</td>
+                    </tr>
+                    <tr>
+                        <td>Current Lottery - Next Drawing:</td>
+                        <td align="right">[need oracle info]]</td>
+                    </tr>
+                    <tr>
+                        <td colSpan="2">
+                            <nav className="p-3 border-b-2 flex flex-row" />
+                        </td>
+                    </tr>
+                </tbody>
             </table>
 
             <label className="block text-gray-700 text-lg font-bold mb-2">ACTIONS:</label>
