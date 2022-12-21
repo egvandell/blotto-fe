@@ -97,10 +97,14 @@ export default function GetLotteryToken() {
             const blotTokenAddressFromCall = await getBlotTokenAddress()
             setBlotTokenAddressLocal(blotTokenAddressFromCall)
 
+            // need to handle these gracefully
+            // TypeError: tokenAllowanceCall is undefined
+            // using wrong wallet and/or network, also chainid could be wrong
+
             // ERROR: "Cannot read properties of undefined (reading 'toString')" 
-            // Check ABI, MM Cache, contractAddresses
+            // Check ABI, MM Cache, contractAddresses, 
             const checkUpkeepResponseFromCall = await checkUpkeep()
-            setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall)
+            setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0])
 
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
@@ -211,14 +215,42 @@ export default function GetLotteryToken() {
                 className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             &nbsp;
             <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                onClick={approve}>Approve Tokens</button></label>
+                onClick=
+                {
+                    async () =>
+                        await approve({
+                            onSuccess: (mess) => {
+//                                        handleSuccess()
+                                console.log(mess)
+                            },
+                            onError: (err) => {
+                                console.log(err)
+                            }
+                        })
+                                                
+                    }                
+                >Approve Tokens</button></label>
 
             <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
             <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" 
                 className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
             &nbsp;
             <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                onClick={getTicket}>Buy Lottery Ticket</button></label>
+                onClick=
+                {
+                    async () =>
+                        await getTicket({
+                            onSuccess: (mess) => {
+//                                        handleSuccess()
+                                console.log(mess)
+                            },
+                            onError: (err) => {
+                                console.log(err)
+                            }
+                        })
+                                                
+                    }                
+                >Buy Lottery Ticket</button></label>
                 
         </div>
     )
