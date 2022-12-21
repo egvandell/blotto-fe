@@ -27,11 +27,20 @@ export default function GetLotteryToken() {
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
+    const[performUpkeepResponse, setPerformUpkeepResponseLocal] = useState("0")
 
+    
     const { runContractFunction: checkUpkeep } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "checkUpkeep",
+        params: {performData: "0x00" },
+    })
+
+    const { runContractFunction: performUpkeep } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "performUpkeep",
         params: {performData: "0x00" },
     })
 
@@ -104,7 +113,11 @@ export default function GetLotteryToken() {
             // ERROR: "Cannot read properties of undefined (reading 'toString')" 
             // Check ABI, MM Cache, contractAddresses, 
             const checkUpkeepResponseFromCall = await checkUpkeep()
-            setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0])
+            setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0].toString())
+
+            const performUpkeepResponseFromCall = await performUpkeep()
+            setPerformUpkeepResponseLocal(performUpkeepResponseFromCall)
+
 
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
@@ -149,6 +162,25 @@ export default function GetLotteryToken() {
                             }
                             >Check Upkeep</button></td>
                         <td align="right">{checkUpkeepResponse}</td>
+                    </tr>
+
+                    <tr>
+                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick=
+                        {
+                            async () =>
+                                await performUpkeep({
+                                    onSuccess: (mess) => {
+                                        console.log(mess)
+                                    },
+                                    onError: (err) => {
+                                        console.log(err)
+                                    }
+                                })
+                                                        
+                            }
+                            >Perform Upkeep</button></td>
+                        <td align="right">(no response available)</td>
                     </tr>
 
                     <tr>
@@ -220,7 +252,6 @@ export default function GetLotteryToken() {
                     async () =>
                         await approve({
                             onSuccess: (mess) => {
-//                                        handleSuccess()
                                 console.log(mess)
                             },
                             onError: (err) => {
@@ -241,7 +272,6 @@ export default function GetLotteryToken() {
                     async () =>
                         await getTicket({
                             onSuccess: (mess) => {
-//                                        handleSuccess()
                                 console.log(mess)
                             },
                             onError: (err) => {
