@@ -1,6 +1,6 @@
 import { contractAddresses, abi, abitoken } from "../constants"
 import { useMoralis, useWeb3Contract } from "react-moralis"
-import { useRef, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNotification } from "web3uikit"
 import { ethers } from "ethers"
 
@@ -15,11 +15,8 @@ export default function GetLotteryToken() {
 //    console.log(`lotteryAddress is ${lotteryAddress}`)
 //    console.log(`tokenAddress is ${tokenAddress}`)
 
-//    const user = await Moralis.User.current();
-
-    const inputTokenAmount = useRef(0);
-    const inputApproveToken = useRef(0);
-
+    const[inputApproveToken, setInputApproveToken] = useState("0")
+    const[inputTokenAmount, setInputTokenAmount] = useState("0")
 
     const[lotteryId, setLotteryIdLocal] = useState("0")
     const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
@@ -27,8 +24,6 @@ export default function GetLotteryToken() {
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
-    const[performUpkeepResponse, setPerformUpkeepResponseLocal] = useState("0")
-
     
     const { runContractFunction: checkUpkeep } = useWeb3Contract ({
         abi: abi,
@@ -50,7 +45,7 @@ export default function GetLotteryToken() {
         functionName: "approve",
         params: {
             spender: lotteryAddress,
-            amount: inputApproveToken.current.value
+            amount: inputApproveToken
         },
 //        msgValue: "0",
     })
@@ -59,7 +54,7 @@ export default function GetLotteryToken() {
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "getTicket",
-        params: {tokenAmount: inputTokenAmount.current.value},
+        params: {tokenAmount: inputTokenAmount},
 //        msgValue: "0",
     })
 
@@ -107,17 +102,13 @@ export default function GetLotteryToken() {
             setBlotTokenAddressLocal(blotTokenAddressFromCall)
 
             // need to handle these gracefully
-            // TypeError: tokenAllowanceCall is undefined
+            // TypeError: [const varname] is undefined
             // using wrong wallet and/or network, also chainid could be wrong
 
             // ERROR: "Cannot read properties of undefined (reading 'toString')" 
-            // Check ABI, MM Cache, contractAddresses, 
+            // Check MM Cache, abi/contractAddresses 
             const checkUpkeepResponseFromCall = await checkUpkeep()
             setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0].toString())
-
-            const performUpkeepResponseFromCall = await performUpkeep()
-            setPerformUpkeepResponseLocal(performUpkeepResponseFromCall)
-
 
             const tokenAllowanceCall = await getTokenAllowance()
             setTokenAllowanceLocal(tokenAllowanceCall.toString())
@@ -243,8 +234,11 @@ export default function GetLotteryToken() {
             <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
             <br />
             <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
-            <input ref={inputApproveToken} type="text" id="approveToken" name="approveToken" 
-                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            <input type="text" id="approveToken" name="approveToken" 
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                value={inputApproveToken}
+                onChange={e => { setInputApproveToken(e.currentTarget.value); }}
+            />
             &nbsp;
             <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
                 onClick=
@@ -263,8 +257,11 @@ export default function GetLotteryToken() {
                 >Approve Tokens</button></label>
 
             <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
-            <input ref={inputTokenAmount} type="text" id="tokenAmount" name="tokenAmount" 
-                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
+            <input type="text" id="tokenAmount" name="tokenAmount" 
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                value={inputTokenAmount}
+                onChange={e => { setInputTokenAmount(e.currentTarget.value); }}
+                />
             &nbsp;
             <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
                 onClick=
