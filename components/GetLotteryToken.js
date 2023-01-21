@@ -15,8 +15,8 @@ export default function GetLotteryToken() {
 //    console.log(`lotteryAddress is ${lotteryAddress}`)
 //    console.log(`tokenAddress is ${tokenAddress}`)
 
-    const[inputApproveToken, setInputApproveToken] = useState("0")
-    const[inputTokenAmount, setInputTokenAmount] = useState("0")
+    const[inputApproveToken, setInputApproveToken] = useState("1")
+    const[inputTokenAmount, setInputTokenAmount] = useState("1")
 
     const[lotteryId, setLotteryIdLocal] = useState("0")
     const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
@@ -24,6 +24,7 @@ export default function GetLotteryToken() {
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
+    const[getRandomWordsResponse, setGetRandomWordsResponseLocal] = useState("0")
     
     const { runContractFunction: checkUpkeep } = useWeb3Contract ({
         abi: abi,
@@ -32,11 +33,28 @@ export default function GetLotteryToken() {
         params: {performData: "0x00" },
     })
 
+    const { runContractFunction: getRandomWords } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "getRandomWords",
+        params: {},
+    })
+
     const { runContractFunction: performUpkeep } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "performUpkeep",
         params: {performData: "0x00" },
+    })
+
+    const { runContractFunction: fulfillRandomWords } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "fulfillRandomWordsProxy",
+        params: {
+            requestId: "1",
+            randomWords: [lotteryAddress],
+        },
     })
 
     const { runContractFunction: approve } = useWeb3Contract ({
@@ -107,6 +125,9 @@ export default function GetLotteryToken() {
 
             // ERROR: "Cannot read properties of undefined (reading 'toString')" 
             // Check MM Cache, abi/contractAddresses 
+            const getRandomWordsResponseFromCall = await getRandomWords()
+            setGetRandomWordsResponseLocal(getRandomWordsResponseFromCall.toString())
+
             const checkUpkeepResponseFromCall = await checkUpkeep()
             setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0].toString())
 
@@ -160,6 +181,26 @@ export default function GetLotteryToken() {
                         onClick=
                         {
                             async () =>
+                                await getRandomWords({
+                                    onSuccess: (mess) => {
+//                                        handleSuccess()
+                                        console.log(mess)
+                                    },
+                                    onError: (err) => {
+                                        console.log(err)
+                                    }
+                                })
+                                                        
+                            }
+                            >getRandomWords</button></td>
+                        <td align="right">{getRandomWordsResponse}</td>
+                    </tr>
+
+                    <tr>
+                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick=
+                        {
+                            async () =>
                                 await performUpkeep({
                                     onSuccess: (mess) => {
                                         console.log(mess)
@@ -171,8 +212,28 @@ export default function GetLotteryToken() {
                                                         
                             }
                             >Perform Upkeep</button></td>
-                        <td align="right">(no response available)</td>
+                        <td align="right">(no return data)</td>
                     </tr>
+
+                    <tr>
+                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick=
+                        {
+                            async () =>
+                                await fulfillRandomWords({
+                                    onSuccess: (mess) => {
+                                        console.log(mess)
+                                    },
+                                    onError: (err) => {
+                                        console.log(err)
+                                    }
+                                })
+                                                        
+                            }
+                            >fulfillRandomWords</button></td>
+                        <td align="right">(no return data)</td>
+                    </tr>
+
 
                     <tr>
                         <td>Blotto (Contract) Address:</td>
