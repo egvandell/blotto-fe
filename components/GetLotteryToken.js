@@ -29,8 +29,8 @@ export default function GetLotteryToken() {
     const { runContractFunction: checkUpkeep } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
-        functionName: "checkUpkeep",
-        params: {performData: "0x00" },
+        functionName: "checkUpkeepProxy",
+        params: {checkData: "0x00" },
     })
 
     const { runContractFunction: getRandomWords } = useWeb3Contract ({
@@ -43,7 +43,7 @@ export default function GetLotteryToken() {
     const { runContractFunction: performUpkeep } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
-        functionName: "performUpkeep",
+        functionName: "performUpkeepProxy",
         params: {performData: "0x00" },
     })
 
