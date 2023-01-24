@@ -57,7 +57,11 @@ export default function GetLotteryToken() {
         },
     })
 
-    const { runContractFunction: approve } = useWeb3Contract ({
+    const { runContractFunction: approve,
+        data: enterTxResponse, 
+        isLoading,
+        isFetching,
+    } = useWeb3Contract ({
         abi: abitoken,
         contractAddress: tokenAddress,
         functionName: "approve",
@@ -68,7 +72,9 @@ export default function GetLotteryToken() {
 //        msgValue: "0",
     })
 
-    const { runContractFunction: getTicket } = useWeb3Contract ({
+    const { runContractFunction: getTicket,
+        isLoading : isLoading2,
+        isFetching : isFetching2, } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "getTicket",
@@ -111,39 +117,50 @@ export default function GetLotteryToken() {
         params: {},
     })
 
+    async function updateUI() {
+        const lotteryIdFromCall = await getLotteryId()
+        setLotteryIdLocal(lotteryIdFromCall)
+
+        const blotTokenAddressFromCall = await getBlotTokenAddress()
+        setBlotTokenAddressLocal(blotTokenAddressFromCall)
+
+        // need to handle these gracefully
+        // TypeError: [const varname] is undefined
+        // using wrong wallet and/or network, also chainid could be wrong
+
+        // ERROR: "Cannot read properties of undefined (reading 'toString')" 
+        // Check MM Cache, abi/contractAddresses 
+        const getRandomWordsResponseFromCall = await getRandomWords()
+        setGetRandomWordsResponseLocal(getRandomWordsResponseFromCall.toString())
+
+        const checkUpkeepResponseFromCall = await checkUpkeep()
+        setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0].toString())
+
+        const tokenAllowanceCall = await getTokenAllowance()
+        setTokenAllowanceLocal(tokenAllowanceCall.toString())
+
+        const tokenBalanceSenderFromCall = await getTokenBalanceSender()
+        setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
+
+        const tokenBalanceContractFromCall = await getTokenBalanceContract()
+        setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
+    }
+
     useEffect(() => {
-        async function updateUI() {
-            const lotteryIdFromCall = await getLotteryId()
-            setLotteryIdLocal(lotteryIdFromCall)
-
-            const blotTokenAddressFromCall = await getBlotTokenAddress()
-            setBlotTokenAddressLocal(blotTokenAddressFromCall)
-
-            // need to handle these gracefully
-            // TypeError: [const varname] is undefined
-            // using wrong wallet and/or network, also chainid could be wrong
-
-            // ERROR: "Cannot read properties of undefined (reading 'toString')" 
-            // Check MM Cache, abi/contractAddresses 
-            const getRandomWordsResponseFromCall = await getRandomWords()
-            setGetRandomWordsResponseLocal(getRandomWordsResponseFromCall.toString())
-
-            const checkUpkeepResponseFromCall = await checkUpkeep()
-            setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0].toString())
-
-            const tokenAllowanceCall = await getTokenAllowance()
-            setTokenAllowanceLocal(tokenAllowanceCall.toString())
-
-            const tokenBalanceSenderFromCall = await getTokenBalanceSender()
-            setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
-
-            const tokenBalanceContractFromCall = await getTokenBalanceContract()
-            setTokenBalanceContractLocal(tokenBalanceContractFromCall.toString())   // uint256 needed toString()
-        }
         if (isWeb3Enabled) {
             updateUI()
         }
     }, [isWeb3Enabled])
+
+    const handleSuccess = async (tx) => {
+        try {
+            await tx.wait(1)
+            updateUI()
+//            handleNewNotification(tx)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     return(
         <div>
@@ -272,7 +289,7 @@ export default function GetLotteryToken() {
                         <td align="right">{tokenBalanceSender}</td>
                     </tr>
                     <tr>
-                        <td>Current Blotto Allowance:</td>
+                        <td>Current Token Allowance:</td>
                         <td align="right">{tokenAllowance}</td>
                     </tr>
                     <tr>
@@ -294,7 +311,7 @@ export default function GetLotteryToken() {
             <label className="block text-gray-700 text-lg font-bold mb-2">ACTIONS:</label>
             <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
             <br />
-            <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
+            <label className="block text-gray-700 text-sm font-bold mb-2">New Token Allowance:&nbsp;
             <input type="text" id="approveToken" name="approveToken" 
                 className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
                 value={inputApproveToken}
@@ -307,6 +324,7 @@ export default function GetLotteryToken() {
                     async () =>
                         await approve({
                             onSuccess: (mess) => {
+                                handleSuccess(mess)
                                 console.log(mess)
                             },
                             onError: (err) => {
@@ -314,8 +332,15 @@ export default function GetLotteryToken() {
                             }
                         })
                                                 
-                    }                
-                >Approve Tokens</button></label>
+                    }
+                disabled={isLoading || isFetching}
+                >
+                {isLoading || isFetching ? (
+                    <div className="animate-spin spinner-border bg-sky-500 py-2 px-4 rounded-3xl w-24 border-b-2 rounded-full"></div>
+                ) : (
+                    "Approve Tokens"
+                )}                    
+            </button></label>
 
             <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
             <input type="text" id="tokenAmount" name="tokenAmount" 
@@ -330,16 +355,23 @@ export default function GetLotteryToken() {
                     async () =>
                         await getTicket({
                             onSuccess: (mess) => {
+                                handleSuccess(mess)
                                 console.log(mess)
                             },
                             onError: (err) => {
                                 console.log(err)
                             }
                         })
-                                                
-                    }                
-                >Buy Lottery Ticket</button></label>
-                
+
+                    }
+                    disabled={isLoading2 || isFetching2}
+                    >
+                    {isLoading2 || isFetching2 ? (
+                        <div className="animate-spin spinner-border bg-sky-500 py-2 px-4 rounded-3xl w-28 border-b-2 rounded-full"></div>
+                    ) : (
+                        "Buy Lottery Ticket"
+                    )}                    
+                </button></label>
         </div>
     )
 }
