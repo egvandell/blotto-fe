@@ -22,6 +22,7 @@ export default function GetLotteryToken() {
     const[blotTokenAddress, setBlotTokenAddressLocal] = useState("0")
     const[tokenAllowance, setTokenAllowanceLocal] = useState("0")
     const[tokenBalanceSender, setTokenBalanceSenderLocal] = useState("0")
+    const[userTicketCount, setUserTicketCountLocal] = useState("0")
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
     const[getRandomWordsResponse, setGetRandomWordsResponseLocal] = useState("0")
@@ -110,6 +111,13 @@ export default function GetLotteryToken() {
         params: {},
     })
 
+    const { runContractFunction: getUserTicketCount } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "getUserTicketCount",
+        params: {},
+    })
+
     const { runContractFunction: getTokenBalanceContract } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
@@ -138,6 +146,9 @@ export default function GetLotteryToken() {
 
         const tokenAllowanceCall = await getTokenAllowance()
         setTokenAllowanceLocal(tokenAllowanceCall.toString())
+
+        const getUserTicketCountFromCall = await getUserTicketCount()
+        setUserTicketCountLocal(getUserTicketCountFromCall.toString())       // uint256 needed toString()
 
         const tokenBalanceSenderFromCall = await getTokenBalanceSender()
         setTokenBalanceSenderLocal(tokenBalanceSenderFromCall.toString())       // uint256 needed toString()
@@ -253,16 +264,16 @@ export default function GetLotteryToken() {
 
 
                     <tr>
-                        <td>Blotto (Contract) Address:</td>
+                        <td>Blotto Contract Address:</td>
                         <td align="right">{lotteryAddress}</td>
+                    </tr>
+                    <tr>
+                        <td>$BLOT Token Address:</td>
+                        <td align="right">{blotTokenAddress}</td>
                     </tr>
                     <tr>
                         <td>Blotto Token Balance:</td>
                         <td align="right">{tokenBalanceContract}</td>
-                    </tr>
-                    <tr>
-                        <td>$BLOT Address:</td>
-                        <td align="right">{blotTokenAddress}</td>
                     </tr>
                     <tr>
                         <td>Lottery Id:</td>
@@ -285,16 +296,16 @@ export default function GetLotteryToken() {
                         </th>
                     </tr>
                     <tr>
+                        <td>Current Lottery ({lotteryId})- Number of Tokens:</td>
+                        <td align="right">{userTicketCount}</td>
+                    </tr>
+                    <tr>
                         <td>$BLOT Balance:</td>
                         <td align="right">{tokenBalanceSender}</td>
                     </tr>
                     <tr>
                         <td>Current Token Allowance:</td>
                         <td align="right">{tokenAllowance}</td>
-                    </tr>
-                    <tr>
-                        <td>Current Lottery ({lotteryId})- Number of Tokens:</td>
-                        <td align="right">[need # of tokens]</td>
                     </tr>
                     <tr>
                         <td>Current Lottery - Next Drawing:</td>
