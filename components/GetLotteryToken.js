@@ -26,12 +26,36 @@ export default function GetLotteryToken() {
     const[tokenBalanceContract, setTokenBalanceContractLocal] = useState("0")
     const[checkUpkeepResponse, setCheckUpkeepResponseLocal] = useState("0")
     const[getRandomWordsResponse, setGetRandomWordsResponseLocal] = useState("0")
-    
+    const[lastTimeStamp, setLastTimeStampLocal] = useState("0")
+    const[blockTimestamp, setBlockTimestampLocal] = useState("0")
+    const[interval, setIntervalLocal] = useState("0")
+
+    const[timeRemaining, setTimeRemainingLocal] = useState("0")
+
+
     const { runContractFunction: checkUpkeep } = useWeb3Contract ({
         abi: abi,
         contractAddress: lotteryAddress,
         functionName: "checkUpkeepProxy",
         params: {checkData: "0x00" },
+    })
+
+    const { runContractFunction: getBlockTimestamp } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "getBlockTimestamp",
+    })
+
+    const { runContractFunction: getLastTimeStamp } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "s_lastTimeStamp",
+    })
+
+    const { runContractFunction: getInterval } = useWeb3Contract ({
+        abi: abi,
+        contractAddress: lotteryAddress,
+        functionName: "i_interval",
     })
 
     const { runContractFunction: getRandomWords } = useWeb3Contract ({
@@ -141,6 +165,20 @@ export default function GetLotteryToken() {
         const getRandomWordsResponseFromCall = await getRandomWords()
         setGetRandomWordsResponseLocal(getRandomWordsResponseFromCall.toString())
 
+        const getLastTimeStampFromCall = await getLastTimeStamp()
+        setLastTimeStampLocal(getLastTimeStampFromCall.toString())
+
+        const getBlockTimestampFromCall = await getBlockTimestamp()
+        setBlockTimestampLocal(getBlockTimestampFromCall.toString())
+
+        const getIntervalFromCall = await getInterval()
+        setIntervalLocal(getIntervalFromCall.toString())
+
+        if ((blockTimestamp-lastTimeStamp) > interval)
+            setTimeRemainingLocal("0")
+        else
+            setTimeRemainingLocal((interval-(blockTimestamp-lastTimeStamp)).toString())
+
         const checkUpkeepResponseFromCall = await checkUpkeep()
         setCheckUpkeepResponseLocal(checkUpkeepResponseFromCall[0].toString())
 
@@ -231,6 +269,7 @@ export default function GetLotteryToken() {
                             async () =>
                                 await performUpkeep({
                                     onSuccess: (mess) => {
+                                        handleSuccess(mess)
                                         console.log(mess)
                                     },
                                     onError: (err) => {
@@ -250,6 +289,7 @@ export default function GetLotteryToken() {
                             async () =>
                                 await fulfillRandomWords({
                                     onSuccess: (mess) => {
+                                        handleSuccess(mess)
                                         console.log(mess)
                                     },
                                     onError: (err) => {
@@ -278,6 +318,18 @@ export default function GetLotteryToken() {
                     <tr>
                         <td>Lottery Id:</td>
                         <td align="right">{lotteryId}</td>
+                    </tr>
+                    <tr>
+                        <td>Block Time Stamp:</td>
+                        <td align="right">{blockTimestamp}</td>
+                    </tr>
+                    <tr>
+                        <td>Latest Time Stamp:</td>
+                        <td align="right">{lastTimeStamp}</td>
+                    </tr>
+                    <tr>
+                        <td>Time Remaining (interval={interval}):</td>
+                        <td align="right">{timeRemaining}</td>
                     </tr>
                     <tr>
                         <td colSpan="2">
