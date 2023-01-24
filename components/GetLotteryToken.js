@@ -83,7 +83,6 @@ export default function GetLotteryToken() {
     })
 
     const { runContractFunction: approve,
-        data: enterTxResponse, 
         isLoading,
         isFetching,
     } = useWeb3Contract ({
@@ -212,8 +211,141 @@ export default function GetLotteryToken() {
     }
 
     return(
-        <div>
-              {/*toggle visible/collapse*/}
+        <div align="center">
+            <label className="block text-gray-700 text-lg font-bold mb-2">GET TOKENS</label>
+            <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
+            <br />
+            <div>
+
+            {/*toggle visible/collapse*/}
+            <table className="collapse">
+                <tr><td>
+                <div>
+                    <button className="bg-sky-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                        APPROVE 1,000 TOKENS
+                    </button>
+                    &nbsp;
+                    <button className="bg-sky-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                        APPROVE 5,000 TOKENS
+                    </button>
+                    &nbsp;
+                    <button className="bg-sky-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                        APPROVE 10,000 TOKENS
+                    </button>
+                    &nbsp;
+                    <button className="bg-sky-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                        APPROVE 50,000 TOKENS
+                    </button>
+                </div>
+                <br />
+                <div>
+                    <button className="bg-emerald-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                    GET 1,000 TOKENS
+                    </button>
+                    &nbsp;
+                    <button className="bg-emerald-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                    GET 5,000 TOKENS
+                    </button>
+                    &nbsp;
+                    <button className="bg-emerald-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                    GET 10,000 TOKENS
+                    </button>
+                    &nbsp;
+                    <button className="bg-emerald-500 hover:bg-sky-700 text-white text-2xl font-bold py-3 px-3 h-40 w-40 rounded-3xl">
+                    GET 50,000 TOKENS
+                    </button>
+                </div>
+                </td></tr>
+            </table>
+                <label className="block text-gray-700 text-sm font-bold mb-2">New Token Allowance:&nbsp;
+                <input type="text" id="approveToken" name="approveToken" 
+                    className="shadow appearance-none border rounded py-2 px-3 w-20 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    value={inputApproveToken}
+                    onChange={e => { setInputApproveToken(e.currentTarget.value); }}
+                />
+                &nbsp;
+                <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                    onClick=
+                    {
+                        async () =>
+                            await approve({
+                                onSuccess: (mess) => {
+                                    handleSuccess(mess)
+                                    console.log(mess)
+                                },
+                                onError: (err) => {
+                                    console.log(err)
+                                }
+                            })
+                                                    
+                        }
+                    disabled={isLoading || isFetching}
+                    >
+                    {isLoading || isFetching ? (
+                        <div className="animate-spin spinner-border bg-sky-500 py-2 px-4 rounded-3xl w-24 border-b-2 rounded-full"></div>
+                    ) : (
+                        "Approve Tokens"
+                    )}                    
+                </button></label>
+            </div>
+            <div>
+                <label className="block text-gray-700 text-sm font-bold mb-2">Get More Tokens:&nbsp;
+                <input type="text" id="tokenAmount" name="tokenAmount" 
+                    className="shadow appearance-none border rounded py-2 px-3 w-20 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                    value={inputTokenAmount}
+                    onChange={e => { setInputTokenAmount(e.currentTarget.value); }}
+                    />
+                &nbsp;
+                <button className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                    onClick={
+                        async () =>
+                            await getTicket({
+                                onSuccess: (mess) => {
+                                    handleSuccess(mess)
+                                    console.log(mess)
+                                },
+                                onError: (err) => {
+                                    console.log(err)
+                                }
+                            })
+                        }
+                        disabled={isLoading2 || isFetching2}
+                        >
+                        {isLoading2 || isFetching2 ? (
+                            <div className="animate-spin spinner-border bg-emerald-500 py-2 px-4 rounded-3xl w-28 border-b-2 rounded-full"></div>
+                        ) : (
+                            "Transfer Tokens"
+                        )}                    
+                </button></label>
+            </div>
+            <table className="visible" cellPadding="5">
+                <tbody>
+                    <tr>
+                        <th align="left" colSpan="2">
+                        <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>Current Lottery (#{lotteryId})- Number of Tokens:</td>
+                        <td align="right">{userTicketCount}</td>
+                    </tr>
+                    <tr>
+                        <td>$BLOT Balance:</td>
+                        <td align="right">{tokenBalanceSender}</td>
+                    </tr>
+                    <tr>
+                        <td>Current Token Allowance:</td>
+                        <td align="right">{tokenAllowance}</td>
+                    </tr>
+                    <tr>
+                        <td colSpan="2">
+                            <nav className="p-3 border-b-2 flex flex-row" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {/*toggle visible/collapse*/}
             <table 
                 className="visible" cellPadding="5">
                 <tbody>
@@ -223,13 +355,12 @@ export default function GetLotteryToken() {
                         </th>
                     </tr>
                     <tr>
-                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                        onClick=
-                        {
+                        <td><button className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick={
                             async () =>
                                 await checkUpkeep({
                                     onSuccess: (mess) => {
-//                                        handleSuccess()
+                                        handleSuccess()
                                         console.log(mess)
                                     },
                                     onError: (err) => {
@@ -241,31 +372,26 @@ export default function GetLotteryToken() {
                             >Check Upkeep</button></td>
                         <td align="right">{checkUpkeepResponse}</td>
                     </tr>
-
                     <tr>
-                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                        onClick=
-                        {
+                        <td><button className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick={
                             async () =>
                                 await getRandomWords({
                                     onSuccess: (mess) => {
-//                                        handleSuccess()
+                                        handleSuccess()
                                         console.log(mess)
                                     },
                                     onError: (err) => {
                                         console.log(err)
                                     }
                                 })
-                                                        
                             }
                             >getRandomWords</button></td>
                         <td align="right">{getRandomWordsResponse}</td>
                     </tr>
-
                     <tr>
-                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                        onClick=
-                        {
+                        <td><button className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick={
                             async () =>
                                 await performUpkeep({
                                     onSuccess: (mess) => {
@@ -276,16 +402,13 @@ export default function GetLotteryToken() {
                                         console.log(err)
                                     }
                                 })
-                                                        
                             }
                             >Perform Upkeep</button></td>
                         <td align="right">(no return data)</td>
                     </tr>
-
                     <tr>
-                        <td><button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                        onClick=
-                        {
+                        <td><button className="bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-3xl" 
+                        onClick={
                             async () =>
                                 await fulfillRandomWords({
                                     onSuccess: (mess) => {
@@ -296,13 +419,10 @@ export default function GetLotteryToken() {
                                         console.log(err)
                                     }
                                 })
-                                                        
                             }
                             >fulfillRandomWords</button></td>
                         <td align="right">(no return data)</td>
                     </tr>
-
-
                     <tr>
                         <td>Blotto Contract Address:</td>
                         <td align="right">{lotteryAddress}</td>
@@ -338,103 +458,7 @@ export default function GetLotteryToken() {
                     </tr>
                 </tbody>
             </table>
-            
-            <table 
-                className="visible" cellPadding="5">
-                <tbody>
-                    <tr>
-                        <th align="left" colSpan="2">
-                        <label className="block text-gray-700 text-lg font-bold mb-2">MY BLOTTO INFO:</label>
-                        </th>
-                    </tr>
-                    <tr>
-                        <td>Current Lottery ({lotteryId})- Number of Tokens:</td>
-                        <td align="right">{userTicketCount}</td>
-                    </tr>
-                    <tr>
-                        <td>$BLOT Balance:</td>
-                        <td align="right">{tokenBalanceSender}</td>
-                    </tr>
-                    <tr>
-                        <td>Current Token Allowance:</td>
-                        <td align="right">{tokenAllowance}</td>
-                    </tr>
-                    <tr>
-                        <td>Current Lottery - Next Drawing:</td>
-                        <td align="right">[need oracle info]]</td>
-                    </tr>
-                    <tr>
-                        <td colSpan="2">
-                            <nav className="p-3 border-b-2 flex flex-row" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
 
-            <label className="block text-gray-700 text-lg font-bold mb-2">ACTIONS:</label>
-            <div>Tokens for BLOTTO are based on the ERC20 Standard.  As such, you must first approve tokens for use.</div>
-            <br />
-            <label className="block text-gray-700 text-sm font-bold mb-2">New Token Allowance:&nbsp;
-            <input type="text" id="approveToken" name="approveToken" 
-                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                value={inputApproveToken}
-                onChange={e => { setInputApproveToken(e.currentTarget.value); }}
-            />
-            &nbsp;
-            <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                onClick=
-                {
-                    async () =>
-                        await approve({
-                            onSuccess: (mess) => {
-                                handleSuccess(mess)
-                                console.log(mess)
-                            },
-                            onError: (err) => {
-                                console.log(err)
-                            }
-                        })
-                                                
-                    }
-                disabled={isLoading || isFetching}
-                >
-                {isLoading || isFetching ? (
-                    <div className="animate-spin spinner-border bg-sky-500 py-2 px-4 rounded-3xl w-24 border-b-2 rounded-full"></div>
-                ) : (
-                    "Approve Tokens"
-                )}                    
-            </button></label>
-
-            <label className="block text-gray-700 text-sm font-bold mb-2">Number of Tokens:&nbsp;
-            <input type="text" id="tokenAmount" name="tokenAmount" 
-                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
-                value={inputTokenAmount}
-                onChange={e => { setInputTokenAmount(e.currentTarget.value); }}
-                />
-            &nbsp;
-            <button className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-3xl" 
-                onClick=
-                {
-                    async () =>
-                        await getTicket({
-                            onSuccess: (mess) => {
-                                handleSuccess(mess)
-                                console.log(mess)
-                            },
-                            onError: (err) => {
-                                console.log(err)
-                            }
-                        })
-
-                    }
-                    disabled={isLoading2 || isFetching2}
-                    >
-                    {isLoading2 || isFetching2 ? (
-                        <div className="animate-spin spinner-border bg-sky-500 py-2 px-4 rounded-3xl w-28 border-b-2 rounded-full"></div>
-                    ) : (
-                        "Buy Lottery Ticket"
-                    )}                    
-                </button></label>
         </div>
     )
 }
